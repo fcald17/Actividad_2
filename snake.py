@@ -5,6 +5,7 @@ from random import randrange, choice
 from turtle import *
 #Importar 'square' para generar el visual de la comida y la serpiente y 'vector' para facilitar el uso de posiciones
 from freegames import square, vector
+import time 
 
 #Generar la lista de 5 colores para la serpiente y comida
 colors = ['blue', 'green', 'black', 'purple', 'yellow']
@@ -22,6 +23,7 @@ snake = [vector(10, 0)]
 #Darle dirección a la serpiente a través de vectores
 aim = vector(0, -10)
 
+last_food_time = time.time()
 
 #Función para el cambio de dirección de la serpiente
 def change(x, y):
@@ -29,6 +31,14 @@ def change(x, y):
     aim.x = x
     aim.y = y
 
+def spawn_food():
+    while True:
+        food.x=randrange(-19,19)*10
+        food.y=randrange(-19,19)*10
+        if inside(food) and food not in snake:
+            return
+
+=======
 #Función para determinar si la cabeza de la serpiente sigue en los límites del juego
 def inside(head):
     """Return True if head inside boundaries."""
@@ -38,6 +48,7 @@ def inside(head):
 #Función para el movimiento de la serpiente
 def move():
     """Move snake forward one segment."""
+    global last_food_time
     #Crea una copia de la última parte de la serpiente, la cabeza para evitar cambiar su posición dentro del cuerpo
     head = snake[-1].copy()
     #Genera el movimiento de la cabeza de la serpiente con el valor dado al vector de aim
@@ -58,12 +69,18 @@ def move():
     if head == food:
         #Indica en la pantalla de comandos la longitud de la serpiente
         print('Snake:', len(snake))
+        spawn_food()
+        last_food_time = time.time()
         #Reubica la posición de la comida con nuevas coordinadas aleatorias
         food.x = randrange(-15, 15) * 10
         food.y = randrange(-15, 15) * 10
+
     else:
         #Si no se come, se elimina la cola de la serpiente para dar la ilusión de movimiento, si esto no se hiciera, al agregar la cabeza con 'snake.append(head)', la serpiente crecería
         snake.pop(0)
+        if time.time() - last_food_time >= 5:
+            spawn_food()
+            last_food_time = time.time()
 
     #El juego vuelve a dibujar la serpiente y la comida en sus nuevas posiciones
     clear()
@@ -86,6 +103,7 @@ setup(420, 420, 370, 0)
 hideturtle()
 #Evita que la pantalla se actualice automáticamente para ahorro de tiempo
 tracer(False)
+spawn_food()
 #Permite que el programa identifique si se ha presionado una tecla y recibir información al respecto
 listen()
 #Si se presionan las flechas, dependiendo de su dirección, cambia la dirección de la serpiente
