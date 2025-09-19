@@ -10,19 +10,26 @@ Exercises
 
 from random import randrange
 from turtle import *
-
 from freegames import square, vector
+import time 
 
 food = vector(0, 0)
 snake = [vector(10, 0)]
 aim = vector(0, -10)
 
+last_food_time = time.time()
 
 def change(x, y):
     """Change snake direction."""
     aim.x = x
     aim.y = y
 
+def spawn_food():
+    while True:
+        food.x=randrange(-19,19)*10
+        food.y=randrange(-19,19)*10
+        if inside(food) and food not in snake:
+            return
 
 def inside(head):
     """Return True if head inside boundaries."""
@@ -31,6 +38,7 @@ def inside(head):
 
 def move():
     """Move snake forward one segment."""
+    global last_food_time
     head = snake[-1].copy()
     head.move(aim)
 
@@ -43,10 +51,13 @@ def move():
 
     if head == food:
         print('Snake:', len(snake))
-        food.x = randrange(-15, 15) * 10
-        food.y = randrange(-15, 15) * 10
+        spawn_food()
+        last_food_time = time.time()
     else:
         snake.pop(0)
+        if time.time() - last_food_time >= 5:
+            spawn_food()
+            last_food_time = time.time()
 
     clear()
 
@@ -61,6 +72,7 @@ def move():
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
+spawn_food()
 listen()
 onkey(lambda: change(10, 0), 'Right')
 onkey(lambda: change(-10, 0), 'Left')
