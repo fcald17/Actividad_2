@@ -38,7 +38,6 @@ def spawn_food():
         if inside(food) and food not in snake:
             return
 
-=======
 #Función para determinar si la cabeza de la serpiente sigue en los límites del juego
 def inside(head):
     """Return True if head inside boundaries."""
